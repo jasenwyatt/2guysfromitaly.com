@@ -10,6 +10,23 @@ add_action( 'wp_enqueue_scripts', function() {
 } );
 
 /**
+ * Register custom includes
+ */
+$bricks_includes = [
+  'includes/comments.php',          // Disable commenting system
+  'includes/head-cleaner.php',      // Cleans up WP head
+  //'includes/admin-columns.php',   // Custom columns for admin
+];
+
+foreach ($bricks_includes as $file) {
+  if (!$filepath = locate_template($file)) {
+    trigger_error(sprintf(__('Error locating %s for inclusion', 'bricks'), $file), E_USER_ERROR);
+  }
+  require_once $filepath;
+}
+unset($file, $filepath);
+
+/**
  * Register custom elements
  */
 add_action( 'init', function() {
