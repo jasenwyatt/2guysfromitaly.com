@@ -31,7 +31,8 @@ unset($file, $filepath);
  */
 add_action( 'init', function() {
   $element_files = [
-    __DIR__ . '/elements/title.php',
+    __DIR__ . '/elements/list-menu.php',
+    __DIR__ . '/elements/list-faqs.php',
   ];
 
   foreach ( $element_files as $file ) {

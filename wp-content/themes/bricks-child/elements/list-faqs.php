@@ -30,7 +30,7 @@ class Element_Custom_List_Faqs extends \Bricks\Element {
       $settings = $this->settings;
 
       $faqs = new WP_Query(array(
-        'post_type' => 'faqs',
+        'post_type' => 'faq',
         'post_status' => 'publish',
         'posts_per_page' => -1,
         'orderby' => 'menu_order',
@@ -42,44 +42,43 @@ class Element_Custom_List_Faqs extends \Bricks\Element {
        * 
        * @since 1.4
        */
-      $output = "<div {$this->render_attributes( '_root' )}>";
+      $output = "<section {$this->render_attributes( '_root' )}>";
 
       $output .= '
-      <div class="w-full">
-        <div class="max-w-7xl mx-auto p-6">
-          <h3 class="text-center text-2xl my-6">FAQs</h3>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">';
+      <div class="mx-auto max-w-7xl px-6 py-10">
+          <h2 class="my-12 text-3xl lg:text-5xl font-bold tracking-tight text-gray-900">Frequently Asked Questions</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">';
 
-            // Loop through the jobs and display them
+            // Loop through the questions and display them
             if ($faqs->have_posts()) {
                 while ($faqs->have_posts()) {
                     $faqs->the_post();
 
-                    $output .= '<a href="'. get_the_permalink() .'" class="group flex flex-col w-full p-4 border-8 border-solid border-slate-200 rounded-3xl shadow-toon hover:bg-slate-50">';
+                    $output .= '<div x-data="{ isExpanded: false }" class="w-full divide-y divide-slate-300 overflow-hidden rounded-xl">';
 
-                    $output .= '<h4 class="text-md">' . get_the_title() . '</h4>';
+                    $output .= '
+                    <button id="controlsAccordionItemOne" type="button" class="flex w-full items-center justify-between gap-2 p-4 rounded-xl bg-white border border-solid border-gray-200 focus-visible:outline-0 text-left underline-offset-2 hover:text-black focus-visible:text-gray-900 focus-visible:underline focus-visible:outline-none" aria-controls="accordionItemOne" @click="isExpanded = ! isExpanded" :aria-expanded="isExpanded ? \'true\' : \'false\'">
+                        <h4 class="text-lg font-medium">'.get_the_title().'</h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" class="size-5 shrink-0 transition" aria-hidden="true" :class="isExpanded  ?  \'rotate-180\'  :  \'\'">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                        </svg>
+                    </button>
+                    <div x-cloak x-show="isExpanded" id="accordionItemOne" role="region" aria-labelledby="controlsAccordionItemOne" x-collapse>
+                        <div class="p-4 text-sm sm:text-base text-pretty">'.get_the_content().'</div>
+                    </div>';
 
-                    $location_posts = get_field('job_location');
-                    if ($location_posts):
-                        $location_names = array();
-                        foreach ($location_posts as $location_post):
-                            $location_names[] = get_the_title($location_post);
-                        endforeach;
-                        $output .= '<h6 class="text-gray-400 text-sm uppercase">' . implode(', ', $location_names) . '</h6>';
-                    endif;
-
-                    $output .= '</a>';
+                    $output .= '</div>';
                 }
                 wp_reset_postdata(); // Reset post data after the loop
             } else {
-                $output .= '<p>No job listings available.</p>';
+                $output .= '<p>No questions available.</p>';
             }
 
       $output .= '
           </div>
       </div>';
 
-      $output .= '</div>';
+      $output .= '</section>';
 
       // Output final element HTML
       echo $output;
