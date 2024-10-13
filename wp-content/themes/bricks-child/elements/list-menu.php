@@ -74,14 +74,22 @@ class Element_Custom_List_Menu extends \Bricks\Element {
         if ($menu_items->have_posts()) {
           while ($menu_items->have_posts()) {
             $menu_items->the_post();
+            $output .= '<div class="group relative flex flex-col overflow-hidden rounded-lg border border-solid border-gray-200 bg-white">';
+
+            if (has_post_thumbnail()) {
+              $output .= '
+                <div class="aspect-h-3 aspect-w-4 bg-gray-200 sm:aspect-none group-hover:opacity-75 sm:h-72">
+                  <img src="'.get_the_post_thumbnail_url().'" alt="'.esc_attr(get_the_title()).'" class="h-full w-full object-cover object-center sm:h-full sm:w-full">
+                </div>';
+            }
+
             $output .= '
-            <div class="group relative flex flex-col overflow-hidden rounded-lg border border-solid border-gray-200 bg-white">
               <div class="flex flex-1 flex-col space-y-4 p-4 min-h-56">
-                  <h4 class="text-lg font-medium text-gray-900">'.esc_html(get_the_title()).'</h4>
-                  <p class="text-sm text-gray-500">'.get_the_content().'</p>
-                  <div class="flex flex-1 flex-col justify-end">
-                    <p class="text-base font-medium text-gray-900">$'.esc_html(get_field('item_price')).'</p>
-                  </div>
+                <h4 class="text-lg font-medium text-gray-900">'.esc_html(get_the_title()).'</h4>
+                <p class="text-sm text-gray-500">'.get_the_content().'</p>
+                <div class="flex flex-1 flex-col justify-end">
+                  <p class="text-base font-medium text-gray-900">$'.esc_html(get_field('item_price')).'</p>
+                </div>
               </div>
             </div>';
           }
