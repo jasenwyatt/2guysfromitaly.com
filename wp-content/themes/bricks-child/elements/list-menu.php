@@ -87,8 +87,26 @@ class Element_Custom_List_Menu extends \Bricks\Element {
               <div class="flex flex-1 flex-col space-y-4 p-4 min-h-56">
                 <h4 class="text-lg font-medium text-gray-900">'.esc_html(get_the_title()).'</h4>
                 <p class="text-sm text-gray-500">'.get_the_content().'</p>
-                <div class="flex flex-1 flex-col justify-end">
-                  <p class="text-base font-medium text-gray-900">$'.esc_html(get_field('item_price')).'</p>
+                <div class="flex flex-1 flex-col justify-end">';
+
+                  // Check rows exists.
+                  if( have_rows('item_prices') ):
+                    // Loop through rows.
+                    while( have_rows('item_prices') ) : the_row();
+                        $output .= '
+                        <div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900 flex flex-row items-center">
+                          <div class="flex-initial w-64">'.esc_html(get_sub_field('item_size')).'</div>
+                          <div class="flex-initial w-32 text-right">$'.esc_html(get_sub_field('item_price')).'</div>
+                        </div>';
+                    // End loop.
+                    endwhile;
+
+                  // No value.
+                  else :
+                    $output .= '<div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900">$'.esc_html(get_field('item_price')).'</div>';
+                  endif;
+
+            $output .= '
                 </div>
               </div>
             </div>';
