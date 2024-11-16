@@ -74,6 +74,7 @@ class Element_Custom_List_Menu extends \Bricks\Element {
         if ($menu_items->have_posts()) {
           while ($menu_items->have_posts()) {
             $menu_items->the_post();
+
             $output .= '<div class="group relative flex flex-col overflow-hidden rounded-lg border border-solid border-gray-200 bg-white">';
 
             if (has_post_thumbnail()) {
@@ -106,12 +107,72 @@ class Element_Custom_List_Menu extends \Bricks\Element {
                     $output .= '<div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900">$'.esc_html(get_field('item_price')).'</div>';
                   endif;
 
+                  $option_items = new WP_Query(array(
+                    'post_type' => 'options',
+                    'post_status' => 'publish',
+                    'posts_per_page' => -1,
+                    'orderby' => 'menu_order',
+                    'order' => 'ASC',
+                    'tax_query' => array(
+                      array(
+                        'taxonomy' => 'menu_category',
+                        'field' => 'term_id',
+                        'terms' => $category->term_id,
+                      ),
+                    ),
+                  ));
+
+                  if ($option_items->have_posts()) :
+
+                    $output .= '
+                      <div x-data="{ isExpanded: false }">
+                        <button 
+                          type="button" 
+                          class="w-full bg-white my-1 px-2 py-2 text-base font-medium text-gray-900"  
+                          @click="isExpanded = ! isExpanded" :aria-expanded="isExpanded ? \'true\' : \'false\'"
+                        >
+                          <div class="flex items-center justify-between">
+                            <span class="text-green-600" x-text ="isExpanded ? \'- Hide Options\' : \'+ Show Options\'">
+                          </div>
+                        </button>';
+
+                    while ($option_items->have_posts()) :
+                      $option_items->the_post();
+
+                      if( have_rows('options_list') ):
+                        $output .= '
+                          <div 
+                            class="transition-all duration-700" 
+                            role="region" 
+                            x-cloak 
+                            x-show="isExpanded" 
+                            x-collapse
+                          >';
+
+                        while( have_rows('options_list') ) : the_row();
+                          $output .= '
+                            <div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900 flex flex-row items-center">
+                              <div class="flex-initial w-64">'.esc_html(get_sub_field('option_name')).'</div>
+                              <div class="flex-initial w-32 text-right">$'.esc_html(get_sub_field('option_price')).'</div>
+                            </div>';
+                        endwhile;
+
+                        $output .= '</div>';
+
+                      endif;
+                    endwhile;
+
+                  $output .= '</div>';
+
+                  endif;
+
             $output .= '
                 </div>
               </div>
             </div>';
           }
           wp_reset_postdata();
+          
         } else {
           $output .= '<p>No menu items available for this category.</p>';
         }
