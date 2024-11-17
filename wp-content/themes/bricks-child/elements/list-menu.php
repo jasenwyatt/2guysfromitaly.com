@@ -90,36 +90,35 @@ class Element_Custom_List_Menu extends \Bricks\Element {
                 <p class="text-sm text-gray-500">'.get_the_content().'</p>
                 <div class="flex flex-1 flex-col justify-end">';
 
-                  // Check rows exists.
+                  // Show Multiple Prices
                   if( have_rows('item_prices') ):
-                    // Loop through rows.
+
                     while( have_rows('item_prices') ) : the_row();
                         $output .= '
                         <div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900 flex flex-row items-center">
                           <div class="flex-initial w-64">'.esc_html(get_sub_field('item_size')).'</div>
                           <div class="flex-initial w-32 text-right">$'.esc_html(get_sub_field('item_price')).'</div>
                         </div>';
-                    // End loop.
                     endwhile;
 
-                  // No value.
+                  // Single Pricing
                   else :
-                    $output .= '<div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900">$'.esc_html(get_field('item_price')).'</div>';
+                    $output .= '<div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900 text-right">$'.esc_html(get_field('item_price')).'</div>';
                   endif;
 
                   $option_items = new WP_Query(array(
                     'post_type' => 'options',
                     'post_status' => 'publish',
                     'posts_per_page' => -1,
+                    'meta_query'  => array(
+                      array(
+                        'key'      => 'item_connection',
+                        'value'    => get_the_ID(),
+                        'compare'  => 'LIKE'
+                      )
+                    ),
                     'orderby' => 'menu_order',
                     'order' => 'ASC',
-                    'tax_query' => array(
-                      array(
-                        'taxonomy' => 'menu_category',
-                        'field' => 'term_id',
-                        'terms' => $category->term_id,
-                      ),
-                    ),
                   ));
 
                   if ($option_items->have_posts()) :
@@ -129,7 +128,8 @@ class Element_Custom_List_Menu extends \Bricks\Element {
                         <button 
                           type="button" 
                           class="w-full bg-white my-1 px-2 py-2 text-base font-medium text-gray-900"  
-                          @click="isExpanded = ! isExpanded" :aria-expanded="isExpanded ? \'true\' : \'false\'"
+                          @click="isExpanded = ! isExpanded" 
+                          :aria-expanded="isExpanded ? \'true\' : \'false\'"
                         >
                           <div class="flex items-center justify-between">
                             <span class="text-green-600" x-text ="isExpanded ? \'- Hide Options\' : \'+ Show Options\'">
@@ -152,12 +152,19 @@ class Element_Custom_List_Menu extends \Bricks\Element {
                         while( have_rows('options_list') ) : the_row();
                           $output .= '
                             <div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900 flex flex-row items-center">
-                              <div class="flex-initial w-64">'.esc_html(get_sub_field('option_name')).'</div>
-                              <div class="flex-initial w-32 text-right">$'.esc_html(get_sub_field('option_price')).'</div>
+                              <div class="flex-initial w-64">'.esc_html(get_sub_field('option_name')).'</div>';
+
+                          if(get_sub_field('option_price')) :
+                            $output .='
+                              <div class="flex-initial w-32 text-right">$'.esc_html(get_sub_field('option_price')).'</div>';
+                          endif;
+
+                          $output .= '
                             </div>';
                         endwhile;
 
-                        $output .= '</div>';
+                        $output .= '
+                          </div>';
 
                       endif;
                     endwhile;
@@ -177,7 +184,12 @@ class Element_Custom_List_Menu extends \Bricks\Element {
           $output .= '<p>No menu items available for this category.</p>';
         }
 
-        $output .= '</div></div>';
+        $output .= '
+          </div>
+          <div class="my-3">
+            <a href="#brxe-csaizo" class="text-red-500">Back to Menu Categories</a>
+          </div>
+        </div>';
       }
 
       $output .= '</div>';
