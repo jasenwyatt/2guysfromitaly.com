@@ -105,7 +105,9 @@ class Element_Custom_List_Menu extends \Bricks\Element {
                   else :
                     $output .= '<div class="bg-gray-50 my-1 px-2 py-2 rounded-md text-base font-medium text-gray-900 text-right">$'.esc_html(get_field('item_price')).'</div>';
                   endif;
+                  
 
+                  // Options Query
                   $option_items = new WP_Query(array(
                     'post_type' => 'options',
                     'post_status' => 'publish',
@@ -113,7 +115,7 @@ class Element_Custom_List_Menu extends \Bricks\Element {
                     'meta_query'  => array(
                       array(
                         'key'      => 'item_connection',
-                        'value'    => get_the_ID(),
+                        'value'    => '"' . get_the_ID() . '"',
                         'compare'  => 'LIKE'
                       )
                     ),
@@ -121,6 +123,7 @@ class Element_Custom_List_Menu extends \Bricks\Element {
                     'order' => 'ASC',
                   ));
 
+                  // Are there options for this Item?
                   if ($option_items->have_posts()) :
 
                     $output .= '
@@ -165,6 +168,8 @@ class Element_Custom_List_Menu extends \Bricks\Element {
 
                         $output .= '
                           </div>';
+
+                        wp_reset_postdata();
 
                       endif;
                     endwhile;
