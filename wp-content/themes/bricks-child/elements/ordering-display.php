@@ -35,7 +35,7 @@ class Element_Custom_Ordering_Display extends \Bricks\Element {
           </a>';
       else :
         $buttonDisplay = '
-          <a disabled class="btn bg-gray-300 cursor-not-allowed opacity-50">
+          <a disabled class="btn py-3 bg-gray-300 cursor-not-allowed opacity-50">
             Order Online
           </a>';
       endif;
